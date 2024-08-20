@@ -1,0 +1,37 @@
+6))write a script which will get the process name as the input. If the process is running
+it should print ID and current memory usage of the particular process in human
+readable format . if the process is not in running state print process is not running.
+
+$processName = Read-Host "Enter the process name"
+$process = Get-Process -Name $processName -ErrorAction SilentlyContinue
+if ($process) {
+foreach ($p in $process) {
+$processid = $p.Id
+$memUsage = $p.WorkingSet64 / 1MB
+Write-Output "Process ID: $processid"
+Write-Output "Memory Usage: $memUsage"
+}
+} else {
+Write-Output "Process '$processName' is not running."
+}
+
+Enter the process name: msdtc
+Process ID: 5168
+Memory Usage: 10.48828125
+
+
+7)the powershell should identify the files older than one day and move them to a
+backup folder
+
+$sourceDir = "C:\Downloads"
+$backupDir = "$sourceDir\backup"
+if (-not (Test-Path $backupDir)) { New-Item -Path $backupDir -ItemType Directory }
+#$currentDate = Get-Date
+Get-ChildItem -Path $sourceDir -File | Where-Object { $_.LastWriteTime -lt
+(Get-Date).AddDays(-1) } | ForEach-Object {
+Move-Item -Path $_.FullName -Destination $backupDir
+Write-Output "Moved file: $($_.FullName)"
+}
+if (-not (Get-ChildItem -Path $backupDir -File)) { Write-Output "No files older than one day
+were found." }
+
